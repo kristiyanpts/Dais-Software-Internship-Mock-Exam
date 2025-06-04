@@ -312,12 +312,27 @@ namespace FinalProject.Services.Implementations.Reservation
                 }
 
                 var queryParameters = new QueryParameters();
+                queryParameters.AddWhere("user_id", request.User.Id);
+                queryParameters.AddWhere("reservation_date", tomorrow.Date);
+
+                var alreadyHasReservation = await _reservationRepository.RetrieveAll(queryParameters).AnyAsync();
+
+                if (alreadyHasReservation)
+                {
+                    return new QuickReserveResponse()
+                    {
+                        Status = false,
+                        Message = "You have already reserved a workspace for tomorrow!"
+                    };
+                }
+
+                queryParameters = new QueryParameters();
                 queryParameters.AddWhere("workspace_id", request.Data.WorkspaceId);
                 queryParameters.AddWhere("reservation_date", tomorrow.Date);
 
-                var reservations = await _reservationRepository.RetrieveAll(queryParameters).ToListAsync();
+                var alreadyReserved = await _reservationRepository.RetrieveAll(queryParameters).AnyAsync();
 
-                if (reservations.Any())
+                if (alreadyReserved)
                 {
                     return new QuickReserveResponse()
                     {
