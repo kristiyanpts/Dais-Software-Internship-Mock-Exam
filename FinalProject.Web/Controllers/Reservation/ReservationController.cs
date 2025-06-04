@@ -221,7 +221,27 @@ namespace FinalProject.Web.Controllers.Reservation
                     ReservedDates = workspace.ReservedDates
                 }).ToList();
 
+                var favoriteWorkspacesRequest = new GetFavoriteWorkspacesForAuthUserRequest()
+                {
+                    User = GetUserSessionData()
+                };
+
+                var favoriteWorkspacesResponse = await _favoriteWorkspaceService.GetFavoriteWorkspacesForAuthUserAsync(favoriteWorkspacesRequest);
+
+                if (favoriteWorkspacesResponse.Status == false)
+                {
+                    return View("Error", new ErrorViewModel() { RequestId = favoriteWorkspacesResponse.Message });
+                }
+
+                var favoriteWorkspaces = favoriteWorkspacesResponse.Data.ToList().Select(favoriteWorkspace => new SimpleFavoriteWorkspaceViewModel()
+                {
+                    Id = favoriteWorkspace.Id,
+                    WorkspaceId = favoriteWorkspace.WorkspaceId,
+                    UserId = favoriteWorkspace.UserId
+                }).ToList();
+
                 viewModel.Workspaces = workspaces;
+                viewModel.FavoriteWorkspaces = favoriteWorkspaces;
 
                 return View(viewModel);
             }
@@ -267,7 +287,27 @@ namespace FinalProject.Web.Controllers.Reservation
                     ReservedDates = workspace.ReservedDates
                 }).ToList();
 
+                var favoriteWorkspacesRequest = new GetFavoriteWorkspacesForAuthUserRequest()
+                {
+                    User = GetUserSessionData()
+                };
+
+                var favoriteWorkspacesResponse = await _favoriteWorkspaceService.GetFavoriteWorkspacesForAuthUserAsync(favoriteWorkspacesRequest);
+
+                if (favoriteWorkspacesResponse.Status == false)
+                {
+                    return View("Error", new ErrorViewModel() { RequestId = favoriteWorkspacesResponse.Message });
+                }
+
+                var favoriteWorkspaces = favoriteWorkspacesResponse.Data.ToList().Select(favoriteWorkspace => new SimpleFavoriteWorkspaceViewModel()
+                {
+                    Id = favoriteWorkspace.Id,
+                    WorkspaceId = favoriteWorkspace.WorkspaceId,
+                    UserId = favoriteWorkspace.UserId
+                }).ToList();
+
                 viewModel.Workspaces = workspaces;
+                viewModel.FavoriteWorkspaces = favoriteWorkspaces;
 
                 return View(viewModel);
             }
