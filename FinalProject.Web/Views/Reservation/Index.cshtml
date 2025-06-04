@@ -1,0 +1,218 @@
+@model FinalProject.Web.Models.ViewModels.Reservation.Index.IndexReservationViewModel
+@{
+    ViewData["Title"] = "My Reservations";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-gradient mb-0">
+            <i class="fas fa-calendar-check me-2"></i>My Reservations
+        </h1>
+        <a asp-controller="Reservation" asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Reservation
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Favorite Workspaces Section -->
+        <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="sticky-top" style="top: 2rem;">
+                <h2 class="text-gradient mb-4">
+                    <i class="fas fa-star me-2"></i>Favorite Workspaces
+                </h2>
+                @if (!Model.FavoriteWorkspaces.Any())
+                {
+                    <div class="card shadow-soft">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                            <h3 class="text-muted">No Favorite Workspaces</h3>
+                            <p class="text-muted mb-4">Add workspaces to your favorites for quick reservations.</p>
+                            <a asp-controller="Workspace" asp-action="Index" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Browse Workspaces
+                            </a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var workspace in Model.FavoriteWorkspaces)
+                    {
+                        <div class="mb-4">
+                            <div class="card shadow-hover h-100">
+                                <div class="card-header text-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-desk me-2"></i>@workspace.Name
+                                        </h5>
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-star me-1"></i>Favorite
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-2">
+                                            <i class="fas fa-map-marker-alt me-2"></i>Location
+                                        </h6>
+                                        <p class="mb-0">Floor @workspace.Floor, @workspace.Zone</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-2">
+                                            <i class="fas fa-info-circle me-2"></i>Amenities
+                                        </h6>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @if (workspace.HasMonitor)
+                                            {
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-desktop me-1"></i>Monitor
+                                                </span>
+                                            }
+                                            @if (workspace.HasDockingStation)
+                                            {
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-plug me-1"></i>Docking
+                                                </span>
+                                            }
+                                            @if (workspace.IsNearWindow)
+                                            {
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-window-maximize me-1"></i>Window
+                                                </span>
+                                            }
+                                            @if (workspace.IsNearPrinter)
+                                            {
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-print me-1"></i>Printer
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end align-items-center">
+                                    <form asp-controller="Reservation" asp-action="QuickReserve" method="post"
+                                        class="d-inline">
+                                        <input type="hidden" name="workspaceId" value="@workspace.Id" />
+
+                                        <button type="submit" class="btn btn-warning">
+                                            <i class="fas fa-bolt me-1"></i>Quick Reserve
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Regular Reservations Section -->
+        <div class="col-lg-8">
+            <h2 class="text-gradient mb-4">
+                <i class="fas fa-calendar me-2"></i>My Reservations
+            </h2>
+            @if (!Model.Reservations.Any())
+            {
+                <div class="card shadow-soft">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <h3 class="text-muted">No Reservations Found</h3>
+                        <p class="text-muted mb-4">You haven't made any reservations yet.</p>
+                        <a asp-controller="Reservation" asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Make Your First Reservation
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var reservation in Model.Reservations)
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-hover h-100">
+                                <div class="card-header text-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-desk me-2"></i>@reservation.Workspace.Name
+                                        </h5>
+                                        @if (reservation.IsQuickReservation)
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-bolt me-1"></i>Quick
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-clock me-1"></i>Standard
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-2">
+                                            <i class="fas fa-map-marker-alt me-2"></i>Location
+                                        </h6>
+                                        <p class="mb-0">Floor @reservation.Workspace.Floor, @reservation.Workspace.Zone</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-2">
+                                            <i class="fas fa-calendar me-2"></i>Date
+                                        </h6>
+                                        <p class="mb-0">@reservation.ReservationDate.ToString("dd MMMM yyyy")</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-2">
+                                            <i class="fas fa-info-circle me-2"></i>Amenities
+                                        </h6>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @if (reservation.Workspace.HasMonitor)
+                                            {
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-desktop me-1"></i>Monitor
+                                                </span>
+                                            }
+                                            @if (reservation.Workspace.HasDockingStation)
+                                            {
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-plug me-1"></i>Docking
+                                                </span>
+                                            }
+                                            @if (reservation.Workspace.IsNearWindow)
+                                            {
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-window-maximize me-1"></i>Window
+                                                </span>
+                                            }
+                                            @if (reservation.Workspace.IsNearPrinter)
+                                            {
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-print me-1"></i>Printer
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Created @reservation.CreatedAt.ToString("dd MMM yyyy")
+                                        </small>
+                                        <div class="btn-group">
+                                            <a asp-controller="Reservation" asp-action="Cancel" asp-route-id="@reservation.Id"
+                                                class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

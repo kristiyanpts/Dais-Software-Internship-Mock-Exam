@@ -1,0 +1,114 @@
+@model FinalProject.Web.Models.ViewModels.Workspace.Index.IndexWorkspaceViewModel
+@{
+    ViewData["Title"] = "Workspaces";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-gradient mb-0">
+            <i class="fas fa-desk me-2"></i>Workspaces
+        </h1>
+        <a asp-controller="Reservation" asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-calendar-plus me-2"></i>Make a Reservation
+        </a>
+    </div>
+
+    <div class="row">
+        @foreach (var workspace in Model.Workspaces)
+        {
+            var isFavorite = Model.FavoriteWorkspaces.Any(f => f.WorkspaceId == workspace.Id);
+            var favoriteWorkspaceId = Model.FavoriteWorkspaces.FirstOrDefault(f => f.WorkspaceId == workspace.Id)?.Id;
+
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-soft h-100">
+                    <div class="card-header text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-desk me-2"></i>@workspace.Name
+                            </h5>
+                            <form method="post" class="btn btn-link text-white p-0" asp-controller="Workspace"
+                                asp-action="ToggleFavorite">
+                                <input type="hidden" name="workspaceId" value="@workspace.Id" />
+                                <input type="hidden" name="isFavorite" value="@isFavorite.ToString().ToLower()" />
+                                <input type="hidden" name="favoriteWorkspaceId" value="@favoriteWorkspaceId" />
+
+                                <button type="submit" class="btn btn-link text-white p-0">
+                                    <i class="fas fa-star" style="color: @(isFavorite ? "yellow" : "white")"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">
+                                <i class="fas fa-map-marker-alt me-2"></i>Location
+                            </h6>
+                            <p class="mb-0">Floor @workspace.Floor - @workspace.Zone</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">
+                                <i class="fas fa-info-circle me-2"></i>Amenities
+                            </h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                @if (workspace.HasMonitor)
+                                {
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-desktop me-1"></i>Monitor
+                                    </span>
+                                }
+                                @if (workspace.HasDockingStation)
+                                {
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-plug me-1"></i>Docking
+                                    </span>
+                                }
+                                @if (workspace.IsNearWindow)
+                                {
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-window-maximize me-1"></i>Window
+                                    </span>
+                                }
+                                @if (workspace.IsNearPrinter)
+                                {
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-print me-1"></i>Printer
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <a asp-controller="Reservation" asp-action="Create" asp-route-workspaceId="@workspace.Id"
+                            class="btn btn-primary w-100">
+                            <i class="fas fa-calendar-plus me-2"></i>Reserve
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .favorite-btn {
+            transition: transform 0.2s ease;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .favorite-btn i {
+            font-size: 1.2rem;
+        }
+
+        .card {
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+}

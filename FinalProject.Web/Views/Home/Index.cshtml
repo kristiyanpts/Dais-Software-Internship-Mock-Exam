@@ -1,0 +1,148 @@
+﻿@model FinalProject.Web.Models.ViewModels.Home.HomeViewModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-gradient mb-0">
+            <i class="fas fa-home me-2"></i>Welcome Back
+        </h1>
+        <a asp-controller="Reservation" asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-calendar-plus me-2"></i>New Reservation
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-soft">
+                <div class="card-header text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-check me-2"></i>Your Upcoming Reservations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Reservations.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-xmark fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Upcoming Reservations</h4>
+                            <p class="text-muted mb-4">You don't have any upcoming workspace reservations.</p>
+                            <a asp-controller="Reservation" asp-action="Create" class="btn btn-primary">
+                                <i class="fas fa-calendar-plus me-2"></i>Make Your First Reservation
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            @foreach (var reservation in Model.Reservations)
+                            {
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card shadow-hover h-100">
+                                        <div class="card-header text-white">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="mb-0">
+                                                    <i class="fas fa-desk me-2"></i>@reservation.Workspace.Name
+                                                </h5>
+                                                @if (reservation.IsQuickReservation)
+                                                {
+                                                    <span class="badge bg-warning">
+                                                        <i class="fas fa-bolt me-1"></i>Quick Reserve
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-clock me-1"></i>Standard
+                                                    </span>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <h6 class="text-muted mb-2">
+                                                    <i class="fas fa-map-marker-alt me-2"></i>Location
+                                                </h6>
+                                                <p class="mb-0">Floor @reservation.Workspace.Floor - @reservation.Workspace.Zone</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <h6 class="text-muted mb-2">
+                                                    <i class="fas fa-calendar me-2"></i>Reservation Date
+                                                </h6>
+                                                <p class="mb-0">@reservation.ReservationDate.ToString("MMMM dd, yyyy")</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <h6 class="text-muted mb-2">
+                                                    <i class="fas fa-info-circle me-2"></i>Amenities
+                                                </h6>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    @if (reservation.Workspace.HasMonitor)
+                                                    {
+                                                        <span class="badge bg-info">
+                                                            <i class="fas fa-desktop me-1"></i>Monitor
+                                                        </span>
+                                                    }
+                                                    @if (reservation.Workspace.HasDockingStation)
+                                                    {
+                                                        <span class="badge bg-info">
+                                                            <i class="fas fa-plug me-1"></i>Docking
+                                                        </span>
+                                                    }
+                                                    @if (reservation.Workspace.IsNearWindow)
+                                                    {
+                                                        <span class="badge bg-info">
+                                                            <i class="fas fa-window-maximize me-1"></i>Window
+                                                        </span>
+                                                    }
+                                                    @if (reservation.Workspace.IsNearPrinter)
+                                                    {
+                                                        <span class="badge bg-info">
+                                                            <i class="fas fa-print me-1"></i>Printer
+                                                        </span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-transparent border-top-0">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    Created @reservation.CreatedAt.ToString("dd MMM yyyy")
+                                                </small>
+                                            </div>
+
+                                            <div class="d-flex gap-2">
+                                                <a asp-controller="Reservation" asp-action="Cancel" asp-route-id="@reservation.Id"
+                                                    class="btn btn-outline-danger flex-grow-1">
+                                                    <i class="fas fa-trash me-2"></i>Cancel
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .card {
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .badge {
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+        }
+    </style>
+}
